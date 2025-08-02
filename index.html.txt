@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مزاد الخيل</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f8f8f8;
+        text-align: center;
+        margin: 0;
+    }
+    h1 {
+        background: #8B0000;
+        color: white;
+        padding: 15px;
+        margin: 0;
+    }
+    .section {
+        display: none;
+    }
+    .section.active {
+        display: block;
+    }
+    .button {
+        display: inline-block;
+        padding: 12px 20px;
+        margin: 10px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .button:hover {
+        background: #2980b9;
+    }
+    input, textarea {
+        padding: 8px;
+        margin: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 80%;
+    }
+    img {
+        max-width: 150px;
+        border-radius: 10px;
+    }
+    .horse-card {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px auto;
+        width: 80%;
+        background: white;
+        border-radius: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>مزاد الخيل</h1>
+
+<!-- الصفحة الرئيسية -->
+<div id="home" class="section active">
+    <button class="button" onclick="showSection('add')">إضافة خيل للمزاد</button>
+    <button class="button" onclick="showSection('auction')">دخول المزاد</button>
+</div>
+
+<!-- إضافة خيل -->
+<div id="add" class="section">
+    <h2>إضافة خيل جديد</h2>
+    <input type="text" id="horseName" placeholder="اسم الحصان"><br>
+    <input type="text" id="horseAge" placeholder="عمر الحصان"><br>
+    <textarea id="horseHealth" placeholder="الحالة الصحية"></textarea><br>
+    <input type="file" id="horseImage"><br>
+    <input type="number" id="startPrice" placeholder="السعر الابتدائي"><br>
+    <button class="button" onclick="addHorse()">حفظ</button>
+    <button class="button" onclick="showSection('home')">رجوع</button>
+</div>
+
+<!-- المزاد -->
+<div id="auction" class="section">
+    <h2>قائمة الخيول</h2>
+    <div id="horsesList"></div>
+    <button class="button" onclick="showSection('home')">رجوع</button>
+</div>
+
+<script>
+    let horses = [];
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(sec => {
+            sec.classList.remove('active');
+        });
+        document.getElementById(id).classList.add('active');
+
+        if (id === 'auction') {
+            showHorses();
+        }
+    }
+
+    function addHorse() {
+        let name = document.getElementById('horseName').value;
+        let age = document.getElementById('horseAge').value;
+        let health = document.getElementById('horseHealth').value;
+        let price = document.getElementById('startPrice').value;
+        let imageFile = document.getElementById('horseImage').files[0];
+        let imageURL = imageFile ? URL.createObjectURL(imageFile) : '';
+
+        if (!name || !price) {
+            alert('يرجى إدخال اسم الحصان والسعر');
+            return;
+        }
+
+        horses.push({ name, age, health, price, imageURL });
+        alert('تمت الإضافة بنجاح');
+        
+        // مسح الحقول
+        document.getElementById('horseName').value = '';
+        document.getElementById('horseAge').value = '';
+        document.getElementById('horseHealth').value = '';
+        document.getElementById('startPrice').value = '';
+        document.getElementById('horseImage').value = '';
+
+        showSection('home');
+    }
+
+    function showHorses() {
+        let list = document.getElementById('horsesList');
+        list.innerHTML = '';
+        if (horses.length === 0) {
+            list.innerHTML = '<p>لا يوجد خيول في المزاد حاليا</p>';
+            return;
+        }
+        horses.forEach((horse, index) => {
+            list.innerHTML += `
+                <div class="horse-card">
+                    <h3>${horse.name}</h3>
+                    ${horse.imageURL ? <img src="${horse.imageURL}"> : ''}
+                    <p>العمر: ${horse.age}</p>
+                    <p>الصحة: ${horse.health}</p>
+                    <p>السعر الحالي: ${horse.price} ريال</p>
+                    <input type="number" id="bid${index}" placeholder="أدخل سعرك">
+                    <button class="button" onclick="placeBid(${index})">مزايدة</button>
+                </div>
+            `;
+        });
+    }
+
+    function placeBid(index) {
+        let bidValue = document.getElementById(bid${index}).value;
+        if (bidValue && parseFloat(bidValue) > parseFloat(horses[index].price)) {
+            horses[index].price = bidValue;
+            showHorses();
+        } else {
+            alert('السعر يجب أن يكون أعلى من السعر الحالي');
+        }
+    }
+</script>
+
+</body>
+</html>
